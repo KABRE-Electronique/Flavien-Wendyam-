@@ -1,0 +1,1160 @@
+qr-presence-system/
+│
+├── README.md
+├── package.json
+├── .env.local
+├── .gitignore
+│
+├── public/
+│   ├── favicon.ico
+│   └── images/
+│
+├── src/
+│   ├── app/
+│   │   ├── layout.js
+│   │   ├── page.js
+│   │   ├── globals.css
+│   │   │
+│   │   ├── api/
+│   │   │   ├── auth/
+│   │   │   │   └── route.js
+│   │   │   ├── qr/
+│   │   │   │   └── generate/
+│   │   │   │       └── route.js
+│   │   │   ├── attendance/
+│   │   │   │   ├── mark/
+│   │   │   │   │   └── route.js
+│   │   │   │   └── get/
+│   │   │   │       └── route.js
+│   │   │   └── courses/
+│   │   │       └── route.js
+│   │   │
+│   │   ├── dashboard/
+│   │   │   ├── page.js
+│   │   │   └── layout.js
+│   │   │
+│   │   ├── student/
+│   │   │   ├── scan/
+│   │   │   │   └── page.js
+│   │   │   └── history/
+│   │   │       └── page.js
+│   │   │
+│   │   ├── professor/
+│   │   │   ├── page.js
+│   │   │   ├── courses/
+│   │   │   │   └── [id]/
+│   │   │   │       └── page.js
+│   │   │   └── generate-qr/
+│   │   │       └── page.js
+│   │   │
+│   │   ├── auth/
+│   │   │   ├── login/
+│   │   │   │   └── page.js
+│   │   │   └── register/
+│   │   │       └── page.js
+│   │   │
+│   │   └── admin/
+│   │       └── page.js
+│   │
+│   ├── components/
+│   │   ├── QRCodeGenerator.js
+│   │   ├── QRCodeScanner.js
+│   │   ├── AttendanceTable.js
+│   │   ├── CourseCard.js
+│   │   ├── Navbar.js
+│   │   └── Sidebar.js
+│   │
+│   ├── lib/
+│   │   ├── database.js
+│   │   ├── auth.js
+│   │   └── qr.js
+│   │
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Course.js
+│   │   └── Attendance.js
+│   │
+│   └── utils/
+│       ├── constants.js
+│       └── helpers.js
+│
+└── middleware.js
+{
+  "name": "qr-presence-system",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.0.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "qrcode": "^1.5.3",
+    "qr-scanner": "^1.4.2",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "mongoose": "^7.5.0",
+    "axios": "^1.5.0",
+    "react-qr-code": "^2.0.11",
+    "react-qr-scanner": "^1.2.0",
+    "chart.js": "^4.4.0",
+    "react-chartjs-2": "^5.2.0",
+    "tailwindcss": "^3.3.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-next": "14.0.0"
+  }
+}
+# Système de Présence par QR Code - Universités Burkina Faso
+
+## 📋 Description
+Système de gestion des présences par QR Code pour les universités du Burkina Faso. Solution innovante pour faciliter la prise de présence dans les amphithéâtres surchargés.
+
+## 🚀 Fonctionnalités
+- Génération de QR Code dynamique par cours
+- Scan QR Code par les étudiants
+- Tableau de bord pour professeurs
+- Gestion des absences/retards
+- Export des données en Excel
+- Mode hors-ligne disponible
+
+## 🛠️ Installation
+
+### Prérequis
+- Node.js 18+ 
+- MongoDB
+- Git
+
+### Installation
+```bash
+# Cloner le projet
+git clone https://github.com/votre-compte/qr-presence-system.git
+
+# Installer les dépendances
+npm install
+
+# Configurer l'environnement
+cp .env.example .env.local
+
+# Lancer le serveur
+npm run dev
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* Styles personnalisés */
+.qr-container {
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.scanner-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300;
+}
+
+.btn-secondary {
+  @apply bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300;
+}
+
+.card {
+  @apply bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300;
+}
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { QRCodeSVG } from 'qrcode.react'
+
+export default function HomePage() {
+  const router = useRouter()
+  const [userType, setUserType] = useState('')
+  const [stats, setStats] = useState({
+    students: 0,
+    courses: 0,
+    universities: 0
+  })
+
+  useEffect(() => {
+    // Simuler des statistiques
+    setStats({
+      students: '15000+',
+      courses: '500+',
+      universities: '5+'
+    })
+  }, [])
+
+  const handleLogin = (type) => {
+    setUserType(type)
+    router.push(`/auth/login?type=${type}`)
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-12">
+      {/* Hero Section */}
+      <div className="text-center mb-16">
+        <h1 className="text-5xl font-bold text-blue-900 mb-4">
+          Système de Présence par QR Code
+        </h1>
+        <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+          Solution innovante pour simplifier la gestion des présences dans les universités du Burkina Faso.
+          Fini les listes papiers, bonjour l'efficacité numérique!
+        </p>
+        
+        <div className="flex flex-wrap justify-center gap-6 mb-12">
+          <div className="stat-card">
+            <div className="text-4xl font-bold text-blue-600">{stats.students}</div>
+            <div className="text-gray-600">Étudiants</div>
+          </div>
+          <div className="stat-card">
+            <div className="text-4xl font-bold text-green-600">{stats.courses}</div>
+            <div className="text-gray-600">Cours</div>
+          </div>
+          <div className="stat-card">
+            <div className="text-4xl font-bold text-purple-600">{stats.universities}</div>
+            <div className="text-gray-600">Universités</div>
+          </div>
+        </div>
+      </div>
+
+      {/* QR Code Example */}
+      <div className="max-w-md mx-auto mb-12">
+        <div className="qr-container">
+          <h3 className="text-xl font-semibold mb-4 text-center">Exemple de QR Code de Présence</h3>
+          <div className="flex justify-center">
+            <QRCodeSVG 
+              value="https://presence-qr.bf/course/MATH101/2024-10-15" 
+              size={200}
+              level="H"
+              includeMargin={true}
+            />
+          </div>
+          <p className="text-center mt-4 text-sm text-gray-500">
+            Scannez avec votre smartphone pour marquer votre présence
+          </p>
+        </div>
+      </div>
+
+      {/* User Selection */}
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-8">Connectez-vous</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Étudiant */}
+          <div className="card text-center">
+            <div className="text-6xl mb-4">🎓</div>
+            <h3 className="text-2xl font-bold mb-3">Étudiant</h3>
+            <p className="text-gray-600 mb-6">
+              Scanner le QR Code pour marquer votre présence
+            </p>
+            <button 
+              onClick={() => handleLogin('student')}
+              className="btn-primary w-full"
+            >
+              Se connecter
+            </button>
+          </div>
+
+          {/* Professeur */}
+          <div className="card text-center">
+            <div className="text-6xl mb-4">👨‍🏫</div>
+            <h3 className="text-2xl font-bold mb-3">Professeur</h3>
+            <p className="text-gray-600 mb-6">
+              Générer des QR Codes et gérer les présences
+            </p>
+            <button 
+              onClick={() => handleLogin('professor')}
+              className="btn-primary w-full"
+            >
+              Se connecter
+            </button>
+          </div>
+
+          {/* Administrateur */}
+          <div className="card text-center">
+            <div className="text-6xl mb-4">👨‍💼</div>
+            <h3 className="text-2xl font-bold mb-3">Administrateur</h3>
+            <p className="text-gray-600 mb-6">
+              Gérer le système, utilisateurs et statistiques
+            </p>
+            <button 
+              onClick={() => handleLogin('admin')}
+              className="btn-primary w-full"
+            >
+              Se connecter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Features */}
+      <div className="mt-20">
+        <h2 className="text-3xl font-bold text-center mb-12">Pourquoi notre système?</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="feature-card">
+            <div className="text-4xl mb-4">⚡</div>
+            <h4 className="text-xl font-bold mb-2">Rapide</h4>
+            <p>Prise de présence en quelques secondes</p>
+          </div>
+          <div className="feature-card">
+            <div className="text-4xl mb-4">📱</div>
+            <h4 className="text-xl font-bold mb-2">Mobile</h4>
+            <p>Fonctionne sur tous les smartphones</p>
+          </div>
+          <div className="feature-card">
+            <div className="text-4xl mb-4">🔒</div>
+            <h4 className="text-xl font-bold mb-2">Sécurisé</h4>
+            <p>QR Codes dynamiques anti-fraude</p>
+          </div>
+          <div className="feature-card">
+            <div cl deassName="text-4xl mb-4">📊</div>
+            <h4 className="text-xl font-bold mb-2">Analytique</h4>
+            <p>Statistiques détaillées en temps réel</p>
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
+        .stat-card {
+          @apply bg-white p-6 rounded-xl shadow-lg min-w-[180px] text-center;
+        }
+        .feature-card {
+          @apply bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 text-center;
+        }
+      `}</style>
+    </div>
+  )
+}'use client'
+
+import { useState, useEffect } from 'react'
+import { QRCodeSVG } from 'qrcode.react'
+
+export default function QRCodeGenerator({ courseId, professorId }) {
+  const [qrValue, setQrValue] = useState('')
+  const [isActive, setIsActive] = useState(false)
+  const [timeLeft, setTimeLeft] = useState(300) // 5 minutes
+  const [sessionId, setSessionId] = useState('')
+
+  useEffect(() => {
+    if (isActive && timeLeft > 0) {
+      const timer = setTimeout(() => {
+        setTimeLeft(timeLeft - 1)
+      }, 1000)
+      return () => clearTimeout(timer)
+    } else if (timeLeft === 0) {
+      generateNewQR()
+    }
+  }, [isActive, timeLeft])
+
+  const generateNewQR = async () => {
+    try {
+      const response = await fetch('/api/qr/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          courseId,
+          professorId,
+          duration: 300 // 5 minutes
+        })
+      })
+
+      const data = await response.json()
+      
+      if (data.success) {
+        const newQrValue = JSON.stringify({
+          sessionId: data.sessionId,
+          courseId,
+          timestamp: Date.now(),
+          expiresAt: Date.now() + 300000 // 5 minutes
+        })
+        
+        setQrValue(newQrValue)
+        setSessionId(data.sessionId)
+        setIsActive(true)
+        setTimeLeft(300)
+      }
+    } catch (error) {
+      console.error('Erreur génération QR:', error)
+    }
+  }
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`
+  }
+
+  return (
+    <div className="qr-generator-container">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold mb-2">QR Code de Présence</h2>
+        <p className="text-gray-600">
+          Affichez ce QR Code pendant le cours. Il se renouvelle automatiquement.
+        </p>
+      </div>
+
+      {isActive ? (
+        <>
+          <div className="qr-display mb-6">
+            <div className="flex justify-center mb-4">
+              <div className="relative">
+                <QRCodeSVG 
+                  value={qrValue}
+                  size={256}
+                  level="H"
+                  includeMargin={true}
+                />
+                <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
+                  <div className="bg-white bg-opacity-90 rounded-full p-4">
+                    <div className="text-3xl font-bold text-red-600">
+                      {formatTime(timeLeft)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="text-center">
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800 mb-2">
+                <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                Session active • Expire dans {formatTime(timeLeft)}
+              </div>
+              <p className="text-sm text-gray-500">
+                Session ID: {sessionId}
+              </p>
+            </div>
+          </div>
+
+          <div className="actions space-y-3">
+            <button
+              onClick={generateNewQR}
+              className="btn-secondary w-full"
+            >
+              🔄 Régénérer le QR Code
+            </button>
+            
+            <button
+              onClick={() => setIsActive(false)}
+              className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full transition duration-300"
+            >
+              ⏸️ Suspendre la session
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="text-center py-12">
+          <div className="text-6xl mb-6">📱</div>
+          <h3 className="text-xl font-semibold mb-4">Aucune session active</h3>
+          <p className="text-gray-600 mb-8">
+            Démarrez une session pour générer un QR Code de présence
+          </p>
+          <button
+            onClick={generateNewQR}
+            className="btn-primary text-lg px-8 py-3"
+          >
+            🚀 Démarrer une session
+          </button>
+        </div>
+      )}
+
+      <div className="mt-8 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+        <h4 className="font-bold text-yellow-800 mb-2">Instructions pour le professeur:</h4>
+        <ul className="list-disc pl-5 text-yellow-700 text-sm space-y-1">
+          <li>Démarrez la session au début du cours</li>
+          <li>Affichez le QR Code au tableau ou sur écran</li>
+          <li>Le QR Code change automatiquement toutes les 5 minutes</li>
+          <li>Les étudiants doivent scanner dans les délais</li>
+          <li>Vous pouvez suspendre à tout moment</li>
+        </ul>
+      </div>
+
+      <style jsx>{`
+        .qr-generator-container {
+          @apply bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto;
+        }
+        .qr-display {
+          @apply border-2 border-dashed border-gray-300 rounded-xl p-8;
+        }
+      `}</style>
+    </div>
+  )
+}
+import mongoose from 'mongoose'
+
+const MONGODB_URI = process.env.MONGODB_URI
+
+if (!MONGODB_URI) {
+  throw new Error('Please define the MONGODB_URI environment variable')
+}
+
+let cached = global.mongoose
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null }
+}
+
+async function connectDB() {
+  if (cached.conn) {
+    return cached.conn
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+    }
+
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      return mongoose
+    })
+  }
+
+  try {
+    cached.conn = await cached.promise
+    console.log('✅ Connecté à MongoDB')
+    return cached.conn
+  } catch (error) {
+    console.error('❌ Erreur connexion MongoDB:', error)
+    throw error
+  }
+}
+
+export default connectDB
+import mongoose from 'mongoose'
+
+const attendanceSchema = new mongoose.Schema({
+  student: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  course: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Course',
+    required: true
+  },
+  sessionId: {
+    type: String,
+    required: true,
+    index: true
+  },
+  status: {
+    type: String,
+    enum: ['present', 'late', 'absent', 'excused'],
+    default: 'present'
+  },
+  scanTime: {
+    type: Date,
+    required: true
+  },
+  location: {
+    lat: Number,
+    lng: Number,
+    accuracy: Number
+  },
+  deviceInfo: {
+    userAgent: String,
+    platform: String
+  },
+  qrData: {
+    type: mongoose.Schema.Types.Mixed
+  }
+}, {
+  timestamps: true
+})
+
+// Index pour performances
+attendanceSchema.index({ student: 1, course: 1, scanTime: -1 })
+attendanceSchema.index({ sessionId: 1, student: 1 }, { unique: true })
+
+const Attendance = mongoose.models.Attendance || mongoose.model('Attendance', attendanceSchema)
+
+export default Attendance
+import connectDB from '@/lib/database'
+import Attendance from '@/models/Attendance'
+import User from '@/models/User'
+import Course from '@/models/Course'
+import Session from '@/models/Session'
+import { verifyToken } from '@/lib/auth'
+
+export async function POST(request) {
+  try {
+    await connectDB()
+
+    // Vérifier l'authentification
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader) {
+      return Response.json(
+        { success: false, message: 'Non authentifié' },
+        { status: 401 }
+      )
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+    const decoded = verifyToken(token)
+    
+    if (!decoded) {
+      return Response.json(
+        { success: false, message: 'Token invalide' },
+        { status: 401 }
+      )
+    }
+
+    const data = await request.json()
+    const { studentId, sessionId, courseId, timestamp, location } = data
+
+    // Vérifier si la session existe et est valide
+    const session = await Session.findOne({ 
+      sessionId,
+      course: courseId,
+      isActive: true,
+      expiresAt: { $gt: new Date() }
+    })
+
+    if (!session) {
+      return Response.json(
+        { 
+          success: false, 
+          message: 'Session invalide ou expirée' 
+        },
+        { status: 400 }
+      )
+    }
+
+    // Vérifier si l'étudiant est inscrit au cours
+    const course = await Course.findById(courseId)
+    if (!course.students.includes(studentId)) {
+      return Response.json(
+        { 
+          success: false, 
+          message: 'Étudiant non inscrit à ce cours' 
+        },
+        { status: 403 }
+      )
+    }
+
+    // Vérifier si présence déjà enregistrée
+    const existingAttendance = await Attendance.findOne({
+      sessionId,
+      student: studentId
+    })
+
+    if (existingAttendance) {
+      return Response.json(
+        { 
+          success: false, 
+          message: 'Présence déjà enregistrée pour cette session' 
+        },
+        { status: 409 }
+      )
+    }
+
+    // Déterminer si en retard
+    const scanTime = new Date(timestamp)
+    const sessionStartTime = session.createdAt
+    const lateThreshold = 15 * 60 * 1000 // 15 minutes en millisecondes
+    
+    let status = 'present'
+    if (scanTime - sessionStartTime > lateThreshold) {
+      status = 'late'
+    }
+
+    // Enregistrer la présence
+    const attendance = new Attendance({
+      student: studentId,
+      course: courseId,
+      sessionId,
+      status,
+      scanTime,
+      location,
+      deviceInfo: {
+        userAgent: request.headers.get('user-agent'),
+        platform: navigator?.platform || 'unknown'
+      },
+      qrData: session.qrData
+    })
+
+    await attendance.save()
+
+    // Mettre à jour les statistiques
+    await Session.findByIdAndUpdate(session._id, {
+      $inc: { attendanceCount: 1 },
+      $addToSet: { attendees: studentId }
+    })
+
+    return Response.json({
+      success: true,
+      attendance: {
+        id: attendance._id,
+        student: studentId,
+        course: courseId,
+        status,
+        scanTime: attendance.scanTime,
+        createdAt: attendance.createdAt
+      },
+      message: 'Présence enregistrée avec succès'
+    })
+
+  } catch (error) {
+    console.error('Erreur enregistrement présence:', error)
+    return Response.json(
+      { 
+        success: false, 
+        message: 'Erreur serveur', 
+        error: error.message 
+      },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET(request) {
+  try {
+    await connectDB()
+
+    const { searchParams } = new URL(request.url)
+    const studentId = searchParams.get('studentId')
+    const courseId = searchParams.get('courseId')
+    const startDate = searchParams.get('startDate')
+    const endDate = searchParams.get('endDate')
+
+    const query = {}
+
+    if (studentId) {
+      query.student = studentId
+    }
+
+    if (courseId) {
+      query.course = courseId
+    }
+
+    if (startDate && endDate) {
+      query.scanTime = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
+      }
+    }
+
+    const attendance = await Attendance.find(query)
+      .populate('student', 'matricule firstName lastName')
+      .populate('course', 'code name professor')
+      .sort({ scanTime: -1 })
+      .limit(100)
+
+    return Response.json({
+      success: true,
+      data: attendance,
+      count: attendance.length
+    })
+
+  } catch (error) {
+    console.error('Erreur récupération présences:', error)
+    return Response.json(
+      { success: false, message: 'Erreur serveur' },
+      { status: 500 }
+    )
+  }
+}
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
+  Tooltip, Legend, ResponsiveContainer, PieChart, 
+  Pie, Cell, LineChart, Line 
+} from 'recharts'
+
+export default function DashboardPage() {
+  const router = useRouter()
+  const [user, setUser] = useState(null)
+  const [stats, setStats] = useState({})
+  const [recentAttendance, setRecentAttendance] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Récupérer les données utilisateur
+    const userData = localStorage.getItem('user')
+    if (userData) {
+      const parsedUser = JSON.parse(userData)
+      setUser(parsedUser)
+      fetchDashboardData(parsedUser.id)
+    } else {
+      router.push('/auth/login')
+    }
+  }, [router])
+
+  const fetchDashboardData = async (userId) => {
+    try {
+      setLoading(true)
+      
+      // Récupérer les statistiques
+      const statsResponse = await fetch(`/api/dashboard/stats?userId=${userId}`)
+      const statsData = await statsResponse.json()
+      
+      if (statsData.success) {
+        setStats(statsData.data)
+      }
+
+      // Récupérer les présences récentes
+      const attendanceResponse = await fetch(`/api/attendance?studentId=${userId}&limit=10`)
+      const attendanceData = await attendanceResponse.json()
+      
+      if (attendanceData.success) {
+        setRecentAttendance(attendanceData.data)
+      }
+    } catch (error) {
+      console.error('Erreur récupération dashboard:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const attendanceData = [
+    { name: 'Lun', présences: 85, absences: 15 },
+    { name: 'Mar', présences: 90, absences: 10 },
+    { name: 'Mer', présences: 88, absences: 12 },
+    { name: 'Jeu', présences: 92, absences: 8 },
+    { name: 'Ven', présences: 87, absences: 13 },
+    { name: 'Sam', présences: 45, absences: 55 },
+  ]
+
+  const courseDistribution = [
+    { name: 'Mathématiques', value: 25 },
+    { name: 'Informatique', value: 20 },
+    { name: 'Physique', value: 15 },
+    { name: 'Chimie', value: 10 },
+    { name: 'Autres', value: 30 },
+  ]
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8']
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-xl">Chargement du tableau de bord...</div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {/* En-tête */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">
+          Tableau de bord {user?.role === 'professor' ? 'Professeur' : 'Étudiant'}
+        </h1>
+        <p className="text-gray-600">
+          {user?.firstName} {user?.lastName} • {user?.matricule}
+        </p>
+      </div>
+
+      {/* Statistiques rapides */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="stat-card bg-blue-50 border-blue-200">
+          <div className="text-3xl font-bold text-blue-600">
+            {stats.totalAttendance || '0'}
+          </div>
+          <div className="text-gray-600">Présences totales</div>
+        </div>
+        
+        <div className="stat-card bg-green-50 border-green-200">
+          <div className="text-3xl font-bold text-green-600">
+            {stats.attendanceRate ? `${stats.attendanceRate}%` : '0%'}
+          </div>
+          <div className="text-gray-600">Taux de présence</div>
+        </div>
+        
+        <div className="stat-card bg-purple-50 border-purple-200">
+          <div className="text-3xl font-bold text-purple-600">
+            {stats.coursesCount || '0'}
+          </div>
+          <div className="text-gray-600">Cours suivis</div>
+        </div>
+        
+        <div className="stat-card bg-orange-50 border-orange-200">
+          <div className="text-3xl font-bold text-orange-600">
+            {stats.lateCount || '0'}
+          </div>
+          <div className="text-gray-600">Retards</div>
+        </div>
+      </div>
+
+      {/* Graphiques */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        {/* Graphique de présence hebdomadaire */}
+        <div className="chart-card">
+          <h3 className="text-xl font-bold mb-4">Présences hebdomadaires</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={attendanceData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="présences" fill="#4F46E5" />
+              <Bar dataKey="absences" fill="#EF4444" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Distribution par cours */}
+        <div className="chart-card">
+          <h3 className="text-xl font-bold mb-4">Distribution par cours</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={courseDistribution}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {courseDistribution.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Présences récentes */}
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold">Présences récentes</h3>
+          <button 
+            onClick={() => router.push('/student/history')}
+            className="text-blue-600 hover:text-blue-800 font-medium"
+          >
+            Voir tout →
+          </button>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Cours
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Heure
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Statut
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {recentAttendance.map((attendance) => (
+                <tr key={attendance._id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">
+                      {attendance.course?.code}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {attendance.course?.name}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {new Date(attendance.scanTime).toLocaleDateString('fr-FR')}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {new Date(attendance.scanTime).toLocaleTimeString('fr-FR')}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      attendance.status === 'present' 
+                        ? 'bg-green-100 text-green-800'
+                        : attendance.status === 'late'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {attendance.status === 'present' ? 'Présent' : 
+                       attendance.status === 'late' ? 'En retard' : 'Absent'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Actions rapides */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {user?.role === 'student' && (
+          <>
+            <div className="action-card bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+              <div className="text-4xl mb-4">📱</div>
+              <h4 className="text-xl font-bold mb-2">Scanner présence</h4>
+              <p className="opacity-90 mb-4">Scanner le QR Code en cours</p>
+              <button 
+                onClick={() => router.push('/student/scan')}
+                className="bg-white text-blue-600 hover:bg-blue-50 font-bold py-2 px-4 rounded transition duration-300"
+              >
+                Commencer
+              </button>
+            </div>
+            
+            <div className="action-card bg-gradient-to-r from-green-500 to-green-600 text-white">
+              <div className="text-4xl mb-4">📊</div>
+              <h4 className="text-xl font-bold mb-2">Mes statistiques</h4>
+              <p className="opacity-90 mb-4">Voir toutes mes présences</p>
+              <button 
+                onClick={() => router.push('/student/history')}
+                className="bg-white text-green-600 hover:bg-green-50 font-bold py-2 px-4 rounded transition duration-300"
+              >
+                Voir l'historique
+              </button>
+            </div>
+          </>
+        )}
+
+        {user?.role === 'professor' && (
+          <>
+            <div className="action-card bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+              <div className="text-4xl mb-4">🎯</div>
+              <h4 className="text-xl font-bold mb-2">Générer QR Code</h4>
+              <p className="opacity-90 mb-4">Créer un QR Code pour le cours</p>
+              <button 
+                onClick={() => router.push('/professor/generate-qr')}
+                className="bg-white text-purple-600 hover:bg-purple-50 font-bold py-2 px-4 rounded transition duration-300"
+              >
+                Générer
+              </button>
+            </div>
+            
+            <div className="action-card bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+              <div className="text-4xl mb-4">👥</div>
+              <h4 className="text-xl font-bold mb-2">Gérer présences</h4>
+              <p className="opacity-90 mb-4">Voir et gérer les présences</p>
+              <button 
+                onClick={() => router.push('/professor/courses')}
+                className="bg-white text-orange-600 hover:bg-orange-50 font-bold py-2 px-4 rounded transition duration-300"
+              >
+                Gérer
+              </button>
+            </div>
+          </>
+        )}
+
+        <div className="action-card bg-gradient-to-r from-gray-700 to-gray-900 text-white">
+          <div className="text-4xl mb-4">⚙️</div>
+          <h4 className="text-xl font-bold mb-2">Paramètres</h4>
+          <p className="opacity-90 mb-4">Gérer votre compte</p>
+          <button 
+            onClick={() => router.push('/settings')}
+            className="bg-white text-gray-800 hover:bg-gray-100 font-bold py-2 px-4 rounded transition duration-300"
+          >
+            Paramètres
+          </button>
+        </div>
+      </div>
+
+      <style jsx>{`
+        .stat-card {
+          @apply p-6 rounded-xl border-2 shadow-sm;
+        }
+        .chart-card {
+          @apply bg-white p-6 rounded-xl shadow-lg;
+        }
+        .action-card {
+          @apply p-6 rounded-xl shadow-lg transition-transform duration-300 hover:scale-[1.02];
+        }
+      `}</style>
+    </div>
+  )
+}
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+    },
+  },
+  plugins: [],
+}
+# Créer un nouveau dossier
+mkdir qr-presence-system
+cd qr-presence-system
+
+# Initialiser un projet Next.js
+npx create-next-app@latest . --typescript --tailwind --app
+
+# Installer les dépendances supplémentaires
+npm install qrcode qr-scanner jsonwebtoken 
